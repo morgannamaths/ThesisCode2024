@@ -52,7 +52,7 @@ class Parameters():
         # Access attributes
         paramsU = dataU.attrs["params"][:]
         self.time = dataU.attrs["time"]
-        print(f"Snapshot as time = {self.time}")
+        print(f"Snapshot at time = {self.time}")
         #params_order = data.attrs["params-order"][:]
         self.B0z = paramsU[0]
         self.visc = paramsU[1]

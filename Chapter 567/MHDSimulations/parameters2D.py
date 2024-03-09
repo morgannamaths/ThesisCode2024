@@ -34,7 +34,7 @@ class Parameters2D():
         # Access attributes
         paramsU = f.attrs["params"][:]
         self.time = f.attrs["time"]
-        print(f"Snapshot as time = {self.time}")
+        print(f"Snapshot at time = {self.time}")
         #params_order = f.attrs["params-order"][:]
         self.B0z = paramsU[1]
         self.visc = paramsU[2]
@@ -79,4 +79,4 @@ class Parameters2D():
         return np.sqrt(5 * v_av/omega_av)
 
 if __name__ == "__main__":
-    Parameters2D("mhd2d-n512/dyn11c-001.h5")
+    Parameters2D("mhd2d-n512/dyn11c-000.h5")

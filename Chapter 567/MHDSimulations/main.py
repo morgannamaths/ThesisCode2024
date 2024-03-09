@@ -1,16 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
 from parameters import Parameters
 from parameters2D import Parameters2D
 from operations import Operations
 from bandpass import BandpassFilter
 from Get2DArrays import Get2DArrays
+from Get3DArrays import Get3DArrays
 
 def main3D():
     # Import parameters and fields
-    params = Parameters("mhd3d-32/r1-mhd3-01-uno-Xsp-v.h5", "mhd3d-32/r1-mhd3-01-uno-Xsp-b.h5")
-    #params = Parameters("mhd3d-n256/mhd3-00-uno-Xsp-v.h5", "mhd3d-n256/mhd3-00-uno-Xsp-b.h5")
+    params = Parameters("mhd3d-32/r1-mhd3-00-uno-Xsp-v.h5", "mhd3d-32/r1-mhd3-00-uno-Xsp-b.h5")
+    #params = Parameters("mhd3d-n256/mhd3-03-uno-Xsp-v.h5", "mhd3d-n256/mhd3-03-uno-Xsp-b.h5")
     print("Parameters obtained")
     limit = 2 * np.pi
     ux, uy, uz, Bx, By, Bz = params.fields()
@@ -98,7 +98,7 @@ def main3D():
 
     S_over_L = np.linspace(eta, 1, data_points)   # Avoids division by zero
 
-    scale = [75, 100, 150]
+    scale = [2, 3, 6]
     l_large = [scale[0] * eta, scale[1] * eta, scale[2] * eta]
 
     print("Starting for-loop")
@@ -178,10 +178,10 @@ def main3D():
     Pi_T_3 = Pi_T_3/max(map(abs, Pi_T_3))
 
     # Plot
-    plt.figure(figsize=(9,6))
+    plt.figure(figsize=(10,6))
     plt.plot(S_over_L, -(Pi_array_1), label=f"{scale[0]}" + r"$\eta$")
     plt.plot(S_over_L, -(Pi_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, -(Pi_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.plot(S_over_L, (Pi_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     #plt.plot(S_over_L, -(Pi_array_4), linestyle="dashdot", label=f"{scale[3]}" + r"$\eta$")
     plt.title(f"Normalised Kinetic Energy Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
@@ -189,10 +189,10 @@ def main3D():
     plt.legend()
     plt.savefig(f"3D_{N}_1_t{time}.png")
 
-    plt.figure(figsize=(9,6))
+    plt.figure(figsize=(10,6))
     plt.plot(S_over_L, -(Pi_b_array_1), label=f"{scale[0]}" + r"$\eta$")
     plt.plot(S_over_L, -(Pi_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, -(Pi_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.plot(S_over_L, (Pi_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     #plt.plot(S_over_L, (Pi_b_array_4), linestyle="dashdot", label=f"{scale[3]}" + r"$\eta$")
     plt.title(f"Normalised Magnetic Energy Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
@@ -200,9 +200,9 @@ def main3D():
     plt.legend()
     plt.savefig(f"3D_{N}_2_t{time}.png")
 
-    plt.figure(figsize=(9,6))
-    plt.plot(S_over_L, (F_array_1), label=f"{scale[0]}" + r"$\eta$")
-    plt.plot(S_over_L, (F_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
+    plt.figure(figsize=(10,6))
+    plt.plot(S_over_L, -(F_array_1), label=f"{scale[0]}" + r"$\eta$")
+    plt.plot(S_over_L, -(F_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
     plt.plot(S_over_L, (F_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     #plt.plot(S_over_L, (F_array_4), linestyle="dashdot", label=f"{scale[3]}" + r"$\eta$")
     plt.title(f"Normalised Kinetic Enstrophy Transfer Function, N = {N}^{dims}", fontsize=20)
@@ -211,20 +211,20 @@ def main3D():
     plt.legend()
     plt.savefig(f"3D_{N}_3_t{time}.png")
 
-    plt.figure(figsize=(9,6))
+    plt.figure(figsize=(10,6))
     plt.plot(S_over_L, -(F_b_array_1), label=f"{scale[0]}" + r"$\eta$")
     plt.plot(S_over_L, -(F_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
     plt.plot(S_over_L, -(F_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     #plt.plot(S_over_L, -(F_b_array_4), linestyle="dashdot", label=f"{scale[3]}" + r"$\eta$")
-    plt.title(f"Normalised Magnetic Enstrophy Transfer Function, N = {N}^{dims}", fontsize=20)
+    plt.title(f"Normalised Mean Squared Potential Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
     plt.ylabel(r"$\hat{F}_{r}^{b}$", fontsize=16)
     plt.legend()
     plt.savefig(f"3D_{N}_4_t{time}.png")
 
-    plt.figure(figsize=(9,6))
-    plt.plot(S_over_L, (Pi_T_1), label=f"{scale[0]}" + r"$\eta$")
-    plt.plot(S_over_L, (Pi_T_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
+    plt.figure(figsize=(10,6))
+    plt.plot(S_over_L, -(Pi_T_1), label=f"{scale[0]}" + r"$\eta$")
+    plt.plot(S_over_L, -(Pi_T_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
     plt.plot(S_over_L, (Pi_T_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     #plt.plot(S_over_L, -(Pi_array_4), linestyle="dashdot", label=f"{scale[3]}" + r"$\eta$")
     plt.title(f"Normalised Total Energy Transfer Function, N = {N}^{dims}", fontsize=20)
@@ -236,7 +236,7 @@ def main3D():
 def main2D():
     # Import parameters and fields
     params = Parameters2D("mhd2d-n2048/dyn11c-003.h5")
-    #params = Parameters2D("mhd2d-n512/dyn11c-000.h5")
+    #params = Parameters2D("mhd2d-n512/dyn11c-003.h5")
     limit = 2 * np.pi
     N = params.setup()
     print(f"N is {N}")    # Check if single value for N or 3 values for nx, ny, nz
@@ -316,7 +316,7 @@ def main2D():
 
     S_over_L = np.linspace(eta, 1, data_points)   # Avoids division by zero
 
-    scale = [2, 3, 5]
+    scale = [550, 600, 650]
     l_large = [scale[0] * eta, scale[1] * eta, scale[2] * eta]
 
     # For loop
@@ -391,7 +391,7 @@ def main2D():
     Pi_T_3 = Pi_T_3/max(map(abs, Pi_T_3))
 
     # Plot
-    plt.figure(figsize=(9,6))
+    plt.figure(figsize=(10,6))
     plt.plot(S_over_L, -(Pi_array_1), label=f"{scale[0]}" + r"$\eta$")
     plt.plot(S_over_L, -(Pi_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
     plt.plot(S_over_L, -(Pi_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
@@ -401,40 +401,40 @@ def main2D():
     plt.legend()
     plt.savefig(f"{N}_1_t{time}.png")
 
-    plt.figure(figsize=(9,6))
-    plt.plot(S_over_L, (Pi_b_array_1), label=f"{scale[0]}" + r"$\eta$")
-    plt.plot(S_over_L, (Pi_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, (Pi_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.figure(figsize=(10,6))
+    plt.plot(S_over_L, -(Pi_b_array_1), label=f"{scale[0]}" + r"$\eta$")
+    plt.plot(S_over_L, -(Pi_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
+    plt.plot(S_over_L, -(Pi_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     plt.title(f"Normalised Magnetic Energy Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
     plt.ylabel(r"$\hat{\Pi}_{r}^{b}$", fontsize=16)
     plt.legend()
     plt.savefig(f"{N}_2_t{time}.png")
 
-    plt.figure(figsize=(9,6))
+    plt.figure(figsize=(10,6))
     plt.plot(S_over_L, -(F_array_1), label=f"{scale[0]}" + r"$\eta$")
     plt.plot(S_over_L, -(F_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, (F_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.plot(S_over_L, -(F_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     plt.title(f"Normalised Kinetic Enstrophy Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
     plt.ylabel(r"$\hat{F}_{r}^{u}$", fontsize=16)
     plt.legend()
     plt.savefig(f"{N}_3_t{time}.png")
 
-    plt.figure(figsize=(9,6))
-    plt.plot(S_over_L, -(F_b_array_1), label=f"{scale[0]}" + r"$\eta$")
-    plt.plot(S_over_L, -(F_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, -(F_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
-    plt.title(f"Normalised Magnetic Enstrophy Transfer Function, N = {N}^{dims}", fontsize=20)
+    plt.figure(figsize=(10,6))
+    plt.plot(S_over_L, (F_b_array_1), label=f"{scale[0]}" + r"$\eta$")
+    plt.plot(S_over_L, (F_b_array_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
+    plt.plot(S_over_L, (F_b_array_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.title(f"Normalised Mean Squared Potential Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
     plt.ylabel(r"$\hat{F}_{r}^{b}$", fontsize=16)
     plt.legend()
     plt.savefig(f"{N}_4_t{time}.png")
 
-    plt.figure(figsize=(9,6))
-    plt.plot(S_over_L, (Pi_T_1), label=f"{scale[0]}" + r"$\eta$")
-    plt.plot(S_over_L, (Pi_T_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
-    plt.plot(S_over_L, (Pi_T_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
+    plt.figure(figsize=(10,6))
+    plt.plot(S_over_L, -(Pi_T_1), label=f"{scale[0]}" + r"$\eta$")
+    plt.plot(S_over_L, -(Pi_T_2), linestyle="dotted", label=f"{scale[1]}" + r"$\eta$")
+    plt.plot(S_over_L, -(Pi_T_3), linestyle="dashdot", label=f"{scale[2]}" + r"$\eta$")
     plt.title(f"Normalised Total Energy Transfer Function, N = {N}^{dims}", fontsize=20)
     plt.xlabel("S/L", fontsize=16)
     plt.ylabel(r"$\hat{\Pi}_{\text{Total}}$", fontsize=16)
@@ -448,50 +448,80 @@ def EnergySpectrum2D(filename):
     N = params.setup()
     print(f"N is {N}")    # Check if single value for N or 3 values for nx, ny, nz
     a_z_sqd, omega_z = params.fields()
+    a_z_sqd_hat = Operations().rfft(a_z_sqd)
+    a_z_hat = np.full((N, int(N/2)+1), 0+0j)
+    for x in range(a_z_sqd_hat.shape[1]):
+        for y in range(a_z_sqd_hat.shape[0]):
+            a_z_hat[y][x] = np.sqrt(a_z_sqd_hat[y][x])
+    a_z = Operations().irfft(a_z_hat)
+
     dims = omega_z.ndim
     visc = params.visc
     time = params.time
     x, y, kx, ky = params.space(limit)
     k_magnitude = np.arange(0, N, 1)
 
+    Kx, Ky = np.meshgrid(kx, ky) #removed ij to maintain y,x,z format, otherwise output is rotated
+
     # Zero padding arrays
     zerosReal = np.full((N, N), 0)
 
-    Kx, Ky = np.meshgrid(kx, ky) #removed ij to maintain y,x,z format, otherwise output is rotated
+    '''B = Operations().curl2D_zhat(zerosReal, a_z, Kx, Ky)
+    Bx = B[0]
+    By = B[1]
+    Bxhat = Operations().rfft(Bx)
+    Byhat = Operations().rfft(By)'''
 
     uxhat, uyhat = Operations().anticurl_zhat(zerosReal, omega_z, Kx, Ky)
     E_Omni = Operations().Energy_Spectrum_Omni_2D(N, uxhat, uyhat, kx, ky)
 
+    #E_Omni_B = Operations().Energy_Spectrum_Omni_2D(N, Bxhat, Byhat, kx, ky)
+
     plt.figure(figsize=(9, 6))
-    plt.plot(k_magnitude, E_Omni)
+    plt.plot(k_magnitude, E_Omni, label = r"$E_V(k)$")
+    #plt.plot(k_magnitude, E_Omni_B, "--", label = r"$E_b(k)$")
     plt.title(f"MHD Energy Spectrum, for N = {N}^{dims}", fontsize = 20)
-    plt.xlabel(r"$k = |\vec{k}|")
+    plt.xlabel(r"$k = |\vec{k}|$")
     plt.ylabel(r"$E(\vec{k})$")
     plt.xscale("log")
     plt.yscale("log")
-    plt.plot(k_magnitude, 2*10e-8 * (k_magnitude)**(-5/3), "--", color="red")
-    plt.text(10, 10**(-10), r"$\propto k^{-5/3}$", fontsize=14, color="red")
-    plt.plot(k_magnitude, 2*10e-8 * (k_magnitude)**(-3/2), "--", color="green")
-    plt.text(10, 10**(-7.5), r"$\propto k^{-3/2}$", fontsize=14, color="green")
+    #plt.ylim((10e-8, 1))
+    #plt.legend()
 
 def Surface2D():
     # Import parameters and fields
     #params = Parameters2D("mhd2d-n2048/dyn11c-003.h5")
-    S_over_L, t1, P_11, P_12, P_13, Pb_11, Pb_12, Pb_13, F_11, F_12, F_13, Fb_11, Fb_12, Fb_13 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-000.h5")
-    S_over_L, t2, P_21, P_22, P_23, Pb_21, Pb_22, Pb_23, F_21, F_22, F_23, Fb_21, Fb_22, Fb_23 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-001.h5")
-    S_over_L, t3, P_31, P_32, P_33, Pb_31, Pb_32, Pb_33, F_31, F_32, F_33, Fb_31, Fb_32, Fb_33 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-002.h5")
-    S_over_L, t4, P_41, P_42, P_43, Pb_41, Pb_42, Pb_43, F_41, F_42, F_43, Fb_41, Fb_42, Fb_43 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-003.h5")
+    S_over_L, t1, P_11, P_12, P_13, Pb_11, Pb_12, Pb_13, F_11, F_12, F_13, Fb_11, Fb_12, Fb_13, T_11, T_12, T_13 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-000.h5")
+    S_over_L, t2, P_21, P_22, P_23, Pb_21, Pb_22, Pb_23, F_21, F_22, F_23, Fb_21, Fb_22, Fb_23, T_21, T_22, T_23 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-001.h5")
+    S_over_L, t3, P_31, P_32, P_33, Pb_31, Pb_32, Pb_33, F_31, F_32, F_33, Fb_31, Fb_32, Fb_33, T_31, T_32, T_33 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-002.h5")
+    S_over_L, t4, P_41, P_42, P_43, Pb_41, Pb_42, Pb_43, F_41, F_42, F_43, Fb_41, Fb_42, Fb_43, T_41, T_42, T_43 = Get2DArrays().Arrays("mhd2d-n512/dyn11c-003.h5")
 
     # Fields
     time_array = np.array([t1, t2, t3, t4])
     field_X, field_Y = np.meshgrid(S_over_L, time_array)
-    Get2DArrays().Plotting(2, field_X, field_Y, P_11, P_21, P_31, P_41, -Pb_11, Pb_21, Pb_31, Pb_41, F_11, F_21, F_31, F_41, Fb_11, -Fb_21, Fb_31, -Fb_41)
-    Get2DArrays().Plotting(3, field_X, field_Y, P_12, P_22, P_32, P_42, -Pb_12, Pb_22, Pb_32, Pb_42, F_12, F_22, F_32, F_42, Fb_12, -Fb_22, Fb_32, Fb_42)
-    Get2DArrays().Plotting(5, field_X, field_Y, P_13, P_23, P_33, P_43, -Pb_13, Pb_23, Pb_33, Pb_43, F_13, F_23, F_33, F_43, -Fb_13, -Fb_23, Fb_33, -Fb_43)
+    Get2DArrays().Plotting(100, field_X, field_Y, P_11, P_21, P_31, P_41, Pb_11, -Pb_21, -Pb_31, Pb_41, F_11, -F_21, -F_31, -F_41, -Fb_11, -Fb_21, Fb_31, Fb_41, T_11, T_21, T_31, T_41)
+    Get2DArrays().Plotting(130, field_X, field_Y, P_12, P_22, P_32, -P_42, Pb_12, -Pb_22, -Pb_32, Pb_42, F_12, -F_22, -F_32, F_42, -Fb_12, -Fb_22, Fb_32, Fb_42, T_12, T_22, T_32, -T_42)
+    Get2DArrays().Plotting(160, field_X, field_Y, P_13, P_23, -P_33, -P_43, Pb_13, -Pb_23, -Pb_33, Pb_43, F_13, -F_23, F_33, F_43, -Fb_13, -Fb_23, Fb_33, Fb_43, T_13, T_23, -T_33, -T_43)
+
+def Surface3D():
+    # Import parameters and fields
+    #S_over_L, t1, T_11, T_12, T_13 = Get3DArrays().Arrays("mhd3d-32/r1-mhd3-00-uno-Xsp-v.h5", "mhd3d-32/r1-mhd3-00-uno-Xsp-b.h5")
+    #S_over_L, t2, T_21, T_22, T_23 = Get3DArrays().Arrays("mhd3d-32/r1-mhd3-01-uno-Xsp-v.h5", "mhd3d-32/r1-mhd3-01-uno-Xsp-b.h5")
+    S_over_L, t1, T_11, T_12, T_13 = Get3DArrays().Arrays("mhd3d-n256/mhd3-00-uno-Xsp-v.h5", "mhd3d-n256/mhd3-00-uno-Xsp-b.h5")
+    S_over_L, t2, T_21, T_22, T_23 = Get3DArrays().Arrays("mhd3d-n256/mhd3-03-uno-Xsp-v.h5", "mhd3d-n256/mhd3-03-uno-Xsp-b.h5")
+
+    # Fields
+    time_array = np.array([t1, t2])
+    field_X, field_Y = np.meshgrid(S_over_L, time_array)
+    Get3DArrays().Plotting(550, field_X, field_Y, T_11, T_21)
+    Get3DArrays().Plotting(600, field_X, field_Y, T_12, T_22)
+    Get3DArrays().Plotting(650, field_X, field_Y, T_13, T_23)
+
 
 if __name__ == "__main__":
-    main3D()
+    #main3D()
     #main2D()
-    #EnergySpectrum2D("mhd2d-n2048/dyn11c-003.h5")
-    #Surface2D()
+    #EnergySpectrum2D("mhd2d-n512/dyn11c-000.h5")
+    Surface2D()
+    #Surface3D()
     plt.show()

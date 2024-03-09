@@ -48,28 +48,30 @@ class Operations():
         anti_cfhat_x = np.full(Kx.shape, 0+0j)
         anti_cfhat_y = np.full(Ky.shape, 0+0j)
         anti_cfhat_z = np.full(Kz.shape, 0+0j)
+
+        ksqd = Kx**2 + Ky**2 + Kz**2
         
         for y in range(Kx.shape[0]):
             for x in range(Kx.shape[1]):
                 for z in range(Kx.shape[2]):
                     if Kx[y][x][z] != 0:
-                        anti_cfhat_x[y][x][z] = -1 * negative_cfhat_x[y][x][z]/(Kx[y][x][z]**2)
+                        anti_cfhat_x[y][x][z] = -1 * negative_cfhat_x[y][x][z]/(ksqd[y][x][z])
         for y in range(Ky.shape[0]):
             for x in range(Ky.shape[1]):
                 for z in range(Ky.shape[2]):
                     if Ky[y][x][z] != 0:
-                        anti_cfhat_y[y][x][z] = -1 * negative_cfhat_y[y][x][z]/(Ky[y][x][z]**2)
+                        anti_cfhat_y[y][x][z] = -1 * negative_cfhat_y[y][x][z]/(ksqd[y][x][z])
         for y in range(Kz.shape[0]):
             for x in range(Kz.shape[1]):
                 for z in range(Kz.shape[2]):
                     if Kz[y][x][z] != 0:
-                        anti_cfhat_z[y][x][z] = -1 * negative_cfhat_z[y][x][z]/(Kz[y][x][z]**2)
+                        anti_cfhat_z[y][x][z] = -1 * negative_cfhat_z[y][x][z]/(ksqd[y][x][z])
         #test_anti_cfhat_x = -1 * negative_cfhat_x/(Kx**2)
         #print(test_anti_cfhat_x - anti_cfhat_x)
         return anti_cfhat_x, anti_cfhat_y, anti_cfhat_z
     
     def anticurl2D(self, F_z, Kx, Ky):
-        negative_cf = -1 * self.curl2D_Single(F_z, Kx, Ky)
+        negative_cf = -1 * self.curl2D(F_z[1], F_z[0], Kx, Ky)
         ksqd = Kx**2 + Ky**2
         anti_cf = np.full((Kx.shape[0], Kx.shape[1]), 0+0j)
         print(Kx.shape)
@@ -80,7 +82,7 @@ class Operations():
         return anti_cf
     
     def anticurl_zhat(self, zeros, F_z, Kx, Ky):
-        F_z_hat = np.fft.rfft2(F_z, s=None, norm="forward")
+        F_z_hat = F_z.shape[0]**2 * self.rfft(F_z)
 
         dFzhat_dx = self.fourier_derivative(F_z_hat, Kx)
         dFzhat_dy = self.fourier_derivative(F_z_hat, Ky)
@@ -89,10 +91,8 @@ class Operations():
         dFz_dy = self.irfft(dFzhat_dy)
         print(f"dFzdx has shape {dFz_dx.shape}")
 
-        neg_curl_F = -1 * np.array([dFz_dy, - dFz_dx, zeros])
-        print(f"negcurlF has shape {neg_curl_F.shape}")
-        neg_curl_F_hat_x = self.rfft(neg_curl_F[1])
-        neg_curl_F_hat_y = self.rfft(neg_curl_F[2])
+        neg_curl_F_hat_x = self.rfft(dFz_dx)
+        neg_curl_F_hat_y = self.rfft(-1 * dFz_dy)
 
         anticurl_F_hat_x = np.full(Kx.shape, 0+0j)
         anticurl_F_hat_y = np.full(Ky.shape, 0+0j)
@@ -101,20 +101,22 @@ class Operations():
         print(f"anticurlFhat_x has shape {anticurl_F_hat_x.shape}")
         print(f"Kx has shape {Kx.shape}")
 
+        ksqd = Kx**2 + Ky**2
+
         for y in range(Kx.shape[0]):
             for x in range(Kx.shape[1]):
                     if Kx[y][x] != 0:
-                        anticurl_F_hat_x[y][x] = -1 * neg_curl_F_hat_x[y][x]/(Kx[y][x]**2)
+                        anticurl_F_hat_x[y][x] = neg_curl_F_hat_x[y][x]/(ksqd[y][x])
         for y in range(Ky.shape[0]):
             for x in range(Ky.shape[1]):
                     if Ky[y][x] != 0:
-                        anticurl_F_hat_y[y][x] = -1 * neg_curl_F_hat_y[y][x]/(Ky[y][x]**2)
+                        anticurl_F_hat_y[y][x] = neg_curl_F_hat_y[y][x]/(ksqd[y][x])
         
         return anticurl_F_hat_x, anticurl_F_hat_y
     
     def curl2D_zhat(self, zeros, F_z, Kx, Ky):
         print(f"F_z has shape {F_z.shape}")
-        F_z_hat = np.fft.rfft2(F_z, s=None, norm="forward")
+        F_z_hat = self.rfft(F_z)
         print(f"Fhat has shape {F_z_hat.shape}")
 
         # Take curl
@@ -175,6 +177,7 @@ class Operations():
     
     def Energy_Spectrum_Omni_2D(self, N, uxhat, uyhat, kx, ky):
         E_Omni = np.zeros(N)
+        p = 0
         for j in range(N-1):
             ky_val = ky[j]
             for i in range(int(N/2)):
@@ -182,6 +185,8 @@ class Operations():
                 k_sqd = kx_val**2 + ky_val**2
                 k_index = int(round(np.sqrt(k_sqd)))
                 E_Omni[k_index] += self.efficient_abs_sqd(uxhat[j][i]) + self.efficient_abs_sqd(uyhat[j][i])
+                p += 1
+                print(f"Energy Spectrum {round(2 * p/(N*N)*100, 2)}% complete")
         return E_Omni
 
     def l_corr(self, E_Omni, k_magnitude):

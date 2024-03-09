@@ -84,9 +84,14 @@ class Get2DArrays():
         Pi_b_array_3 = []
         F_b_array_3 = []
 
-        S_over_L = np.linspace(eta, 2, data_points)   # Avoids division by zero
+        # Total Energy Arrays
+        Pi_T_1 = []
+        Pi_T_2 = []
+        Pi_T_3 = []
 
-        scale = [2, 3, 5]
+        S_over_L = np.linspace(eta, 1, data_points)   # Avoids division by zero
+
+        scale = [100, 130, 160]
         l_large = [scale[0] * eta, scale[1] * eta, scale[2] * eta]
 
         # For loop
@@ -113,10 +118,13 @@ class Get2DArrays():
                 Pi_b = BandpassFilter().Pi_b_2D(ux, uy, B_bL, B_bS, Sij_L, Sij_S, Kx, Ky)
                 if i == 0:
                     Pi_b_array_1.append(Pi_b)
+                    Pi_T_1.append(Pi_u + Pi_b)
                 if i == 1:
                     Pi_b_array_2.append(Pi_b)
+                    Pi_T_2.append(Pi_u + Pi_b)
                 if i == 2:
                     Pi_b_array_3.append(Pi_b)
+                    Pi_T_3.append(Pi_u + Pi_b)
 
                 # Transfer of kinetic enstrophy from large to small scales
                 F_u = BandpassFilter().F_u_2D(ux, uy, zerosReal, zerosComplex, omega_z_hat, J, B_bL, B_bS, Kx, Ky, l_large[i], l_small, alpha, T_large, T_small)
@@ -153,40 +161,51 @@ class Get2DArrays():
         F_b_array_1 = F_b_array_1/max(map(abs, F_b_array_1))
         F_b_array_2 = F_b_array_2/max(map(abs, F_b_array_2))
         F_b_array_3 = F_b_array_3/max(map(abs, F_b_array_3))
+        Pi_T_1 = Pi_T_1/max(map(abs, Pi_T_1))
+        Pi_T_2 = Pi_T_2/max(map(abs, Pi_T_2))
+        Pi_T_3 = Pi_T_3/max(map(abs, Pi_T_3))
 
-        return S_over_L, time, Pi_array_1, Pi_array_2, Pi_array_3, Pi_b_array_1, Pi_b_array_2, Pi_b_array_3, F_array_1, F_array_2, F_array_3, F_b_array_1, F_b_array_2, F_b_array_3
+        return S_over_L, time, Pi_array_1, Pi_array_2, Pi_array_3, Pi_b_array_1, Pi_b_array_2, Pi_b_array_3, F_array_1, F_array_2, F_array_3, F_b_array_1, F_b_array_2, F_b_array_3, Pi_T_1, Pi_T_2, Pi_T_3
     
-    def Plotting(self, scale, field_X, field_Y, P_11, P_21, P_31, P_41, Pb_11, Pb_21, Pb_31, Pb_41, F_11, F_21, F_31, F_41, Fb_11, Fb_21, Fb_31, Fb_41):
+    def Plotting(self, scale, field_X, field_Y, P_11, P_21, P_31, P_41, Pb_11, Pb_21, Pb_31, Pb_41, F_11, F_21, F_31, F_41, Fb_11, Fb_21, Fb_31, Fb_41, T_11, T_21, T_31, T_41):
         Pi_u_field = np.array([P_11, P_21, P_31, P_41])
         Pi_b_field = np.array([Pb_11, Pb_21, Pb_31, Pb_41])
         F_u_field = np.array([F_11, F_21, F_31, F_41])
         F_b_field = np.array([Fb_11, Fb_21, Fb_31, Fb_41])
+        T_field = np.array([T_11, T_21, T_31, T_41])
 
         # Plotting
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(9,6))
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,6))
         ax.plot_surface(field_X, field_Y, Pi_u_field, cmap = "rainbow")
-        plt.title(f"Normalised Kinetic Energy Transfer Function", fontsize=24)
+        plt.title(f"Normalised Kinetic Energy Transfer Function, {scale}" + r"$\eta$", fontsize=22)
         plt.ylabel("Time (s)", fontsize=18)
         plt.xlabel("S/L", fontsize=18)
         plt.savefig(f"SurfacePlots/Scale{scale}KineticEnergy.png")
 
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(9,6))
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,6))
         ax.plot_surface(field_X, field_Y, Pi_b_field, cmap = "rainbow")
-        plt.title(f"Normalised Magnetic Energy Transfer Function", fontsize=24)
+        plt.title(f"Normalised Magnetic Energy Transfer Function, {scale}" + r"$\eta$", fontsize=22)
         plt.ylabel("Time (s)", fontsize=18)
         plt.xlabel("S/L", fontsize=18)
         plt.savefig(f"SurfacePlots/Scale{scale}MagneticEnergy.png")
 
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(9,6))
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"}, figsize=(10,6))
         ax.plot_surface(field_X, field_Y, F_u_field, cmap = "rainbow")
-        plt.title(f"Normalised Kinetic Enstrophy Transfer Function", fontsize=24)
+        plt.title(f"Normalised Kinetic Enstrophy Transfer Function, {scale}" + r"$\eta$", fontsize=22)
         plt.ylabel("Time (s)", fontsize=18)
         plt.xlabel("S/L", fontsize=18)
         plt.savefig(f"SurfacePlots/Scale{scale}KineticEnstrophy.png")
 
-        fig, ax = plt.subplots(subplot_kw={"projection": "3d"},  figsize=(9,6))
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"},  figsize=(10,6))
         ax.plot_surface(field_X, field_Y, F_b_field, cmap = "rainbow")
-        plt.title(f"Normalised Magnetic Enstrophy Transfer Function", fontsize=24)
+        plt.title(f"Normalised Mean Squared Potential Transfer Function, {scale}" + r"$\eta$", fontsize=22)
         plt.ylabel("Time (s)", fontsize=18)
         plt.xlabel("S/L", fontsize=18)
         plt.savefig(f"SurfacePlots/Scale{scale}MagneticEnstrophy.png")
+
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"},  figsize=(10,6))
+        ax.plot_surface(field_X, field_Y, T_field, cmap = "rainbow")
+        plt.title(f"Normalised Total Energy Transfer, {scale}" + r"$\eta$", fontsize=22)
+        plt.ylabel("Time (s)", fontsize=18)
+        plt.xlabel("S/L", fontsize=18)
+        plt.savefig(f"SurfacePlots/Scale{scale}TotalEnergy.png")
